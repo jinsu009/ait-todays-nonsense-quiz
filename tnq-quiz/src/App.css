@@ -1,0 +1,40 @@
+.quiz {
+  box-sizing: border-box;
+  width: min(100vw, 480px);
+  min-height: 100dvh;
+  padding: 28px 24px max(24px, env(safe-area-inset-bottom));
+  background: #fff;
+  color: #191f28;
+  line-height: 1.5;
+}
+
+.quiz h1 { margin: 0; font-size: 26px; }
+.quiz h2 { margin: 8px 0; font-size: 22px; overflow-wrap: anywhere; }
+.quiz p { color: #4e5968; margin: 8px 0 0; overflow-wrap: anywhere; }
+.quiz .question, .quiz .notice {
+  margin-top: 24px;
+  padding: 20px;
+  border-radius: 18px;
+  background: #f2f4f6;
+}
+.quiz .state { margin: 0; font-size: 14px; font-weight: 700; }
+.quiz form, .quiz .hints, .quiz .result { margin-top: 24px; }
+.quiz form { display: grid; gap: 10px; }
+.quiz label { font-weight: 700; }
+.quiz input {
+  box-sizing: border-box;
+  width: 100%;
+  min-height: 52px;
+  border: 1px solid #8b95a1;
+  border-radius: 12px;
+  padding: 0 14px;
+  font: inherit;
+  color: inherit;
+  background: #fff;
+}
+.quiz input:focus-visible { outline: 2px solid #3182f6; outline-offset: 2px; }
+.quiz button { min-height: 44px; }
+.quiz p.help { margin: 0; font-size: 14px; }
+.quiz dl { display: grid; grid-template-columns: auto minmax(0, 1fr); gap: 8px 16px; }
+.quiz dd { margin: 0; overflow-wrap: anywhere; }
+.quiz .feedback { margin-top: 16px; }
