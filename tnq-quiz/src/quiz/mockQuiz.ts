@@ -10,9 +10,9 @@ type Entry = { answer?: string; hints: number; checked?: boolean; correct?: bool
 type Entries = Record<string, Entry>
 const storageKey = 'tnq-quiz:mock:v1'
 
-function read(): Entries {
+function read(testing: boolean): Entries {
   try {
-    return JSON.parse(localStorage.getItem(storageKey) ?? '{}') as Entries
+    return JSON.parse(localStorage.getItem(testing ? `${storageKey}:test` : storageKey) ?? '{}') as Entries
   } catch {
     return {}
   }
@@ -25,9 +25,9 @@ function model(now: Date) {
 }
 
 export const mockQuiz = {
-  view(now: Date) {
+  view(now: Date, testing = false) {
     const { window, quiz } = model(now)
-    const entries = read()
+    const entries = read(testing)
     const entry = entries[window.date] ?? { hints: 0 }
     const correctCount = Object.values(entries).filter((item) => item.correct).length
     return {
@@ -42,16 +42,20 @@ export const mockQuiz = {
       correctCount,
     }
   },
-  update(action: 'submit' | 'hint' | 'check', expectedDate: string, answer?: string) {
-    const { window, quiz } = model(new Date())
+  update(action: 'submit' | 'hint' | 'check', expectedDate: string, answer?: string, testDate?: Date) {
+    const { window, quiz } = model(testDate ?? new Date())
     if (window.date !== expectedDate || (action === 'check') !== (window.phase === 'results')) {
       return '퀴즈 시간이 바뀌었어요. 지금 화면을 확인해 주세요.'
     }
-    const entries = read()
+    const entries = read(Boolean(testDate))
     const entry = entries[window.date] ?? { hints: 0 }
     if (action === 'submit') {
       if (!answer?.trim() || answer.length > 80) return '정답을 1~80자로 입력해 주세요.'
       entry.answer = answer
+      if (testDate) {
+        entry.checked = true
+        entry.correct = true
+      }
     }
     if (action === 'hint') entry.hints = Math.min(entry.hints + 1, quiz.hints.length)
     if (action === 'check' && !entry.checked) {
@@ -60,10 +64,10 @@ export const mockQuiz = {
     }
     entries[window.date] = entry
     try {
-      localStorage.setItem(storageKey, JSON.stringify(entries))
+      localStorage.setItem(testDate ? `${storageKey}:test` : storageKey, JSON.stringify(entries))
     } catch {
       return '브라우저에 저장할 수 없어요. 저장 설정을 확인해 주세요.'
     }
-    return action === 'submit' ? '답안을 저장했어요.' : ''
+    return action === 'submit' && !testDate ? '답안을 저장했어요.' : ''
   },
 }
